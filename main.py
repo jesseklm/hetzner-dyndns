@@ -39,11 +39,11 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
     def get(self, key, value):
         entry: dict = config.get(key, None)
         if entry is None:
-            self.write('not ok')
+            self.write('failed')
             return
         record = HetznerDNSRecord.from_config(entry)
         record.update(value)
-        self.write(f'<pre>ok</pre>')
+        self.write('ok')
 
 
 def make_app():
@@ -56,6 +56,8 @@ def make_app():
 async def main():
     app = make_app()
     app.listen(8888)
+    # server = app.listen(8888)
+    # server.trusted_downstream = []
     shutdown_event = asyncio.Event()
     await shutdown_event.wait()
 
