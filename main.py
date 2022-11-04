@@ -1,4 +1,5 @@
 import secrets
+import socket
 import string
 from abc import ABC
 from pathlib import Path
@@ -55,9 +56,8 @@ def make_app():
 
 async def main():
     app = make_app()
-    app.listen(8888)
-    # server = app.listen(8888)
-    # server.trusted_downstream = []
+    server = app.listen(8888)
+    server.trusted_downstream = [socket.gethostbyname('nginx')]
     shutdown_event = asyncio.Event()
     await shutdown_event.wait()
 
