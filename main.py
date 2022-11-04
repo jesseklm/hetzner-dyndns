@@ -55,7 +55,7 @@ def make_app():
 
 async def main():
     app = make_app()
-    app.listen(8888)
+    app.listen(8888, xheaders=True)
     shutdown_event = asyncio.Event()
     await shutdown_event.wait()
 
