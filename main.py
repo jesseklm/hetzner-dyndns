@@ -37,22 +37,33 @@ class GenerateHandler(tornado.web.RequestHandler, ABC):
 
 
 class UpdateHandler(tornado.web.RequestHandler, ABC):
-    def get(self, key, value):
-        entry: dict = config.get(key, None)
-        if entry is None:
-            self.write('failed')
+    def get(self, *args):
+        if len(args) % 2:
+            self.write('parameters odd')
             return
-        record = HetznerDNSRecord.from_config(entry)
-        record.update(value)
+        if any(len(arg) == 0 for arg in args):
+            self.write('zero length arg')
+            return
+        for i in range(int(len(args) / 2)):
+            if args[i * 2] not in config:
+                self.write('failed')
+                return
+        for i in range(int(len(args) / 2)):
+            record = HetznerDNSRecord.from_config(config[args[i * 2]])
+            record.update(args[i * 2 + 1])
         self.write('ok')
 
 
 def make_app():
+    update_url: str = r"/update/([\w.]*)/([\w.]*)"
     handlers: list = [
-        (r"/update/(.*)/(.*)", UpdateHandler),
+        (update_url, UpdateHandler),
     ]
+    for _ in range(int(os.environ.get('MAX_UPDATES_PER_GET', 2)) - 1):
+        update_url += r"/([\w.]*)/([\w.]*)"
+        handlers.append((update_url, UpdateHandler))
     if 'DISABLE_GENERATE' not in os.environ:
-        handlers.append((r"/generate/(.*)/(.*)/(.*)/(.*)", GenerateHandler))
+        handlers.append((r"/generate/([\w.]*)/([\w.]*)/([\w.]*)/([\w.]*)", GenerateHandler))
     return tornado.web.Application(handlers)
 
 
