@@ -51,6 +51,7 @@ def make_app():
     handlers: list = [
         (r"/update/(.*)/(.*)", UpdateHandler),
     ]
+    print(os.environ)
     if 'DISABLE_GENERATE' not in os.environ:
         handlers.append((r"/generate/(.*)/(.*)/(.*)/(.*)", GenerateHandler))
     return tornado.web.Application(handlers)
