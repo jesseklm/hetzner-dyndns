@@ -55,15 +55,16 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
 
 
 def make_app():
-    update_url: str = r"/update/([\w.]*)/([\w.]*)"
+    reg: str = r'([\w.:]*)'
+    update_url: str = f'/update/{reg}/{reg}'
     handlers: list = [
         (update_url, UpdateHandler),
     ]
     for _ in range(int(os.environ.get('MAX_UPDATES_PER_GET', 2)) - 1):
-        update_url += r"/([\w.]*)/([\w.]*)"
+        update_url += f'/{reg}/{reg}'
         handlers.append((update_url, UpdateHandler))
     if 'DISABLE_GENERATE' not in os.environ:
-        handlers.append((r"/generate/([\w.]*)/([\w.]*)/([\w.]*)/([\w.]*)", GenerateHandler))
+        handlers.append((f'/generate/{reg}/{reg}/{reg}/{reg}', GenerateHandler))
     return tornado.web.Application(handlers)
 
 
