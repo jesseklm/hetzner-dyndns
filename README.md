@@ -20,6 +20,7 @@ https://YOUR_HOST/dns/update/KEY/NEW_IP
 
 - generate config entry
 - append output to `hetzner-dyndns/config.yaml`
+- set `DISABLE_GENERATE` env variable in docker compose file
 - restart service
 
 ## fritzbox configuration
@@ -88,6 +89,8 @@ services:
   hetzner-dyndns:
     build: https://github.com/jesseklm/hetzner-dyndns.git
     container_name: hetzner-dyndns
+    environment:
+      - DISABLE_GENERATE # set after config creation
     networks:
       - nginx
     restart: unless-stopped

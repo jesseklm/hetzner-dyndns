@@ -1,3 +1,4 @@
+import os
 import secrets
 import string
 from abc import ABC
@@ -47,10 +48,12 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
 
 
 def make_app():
-    return tornado.web.Application([
+    handlers: list = [
         (r"/update/(.*)/(.*)", UpdateHandler),
-        (r"/generate/(.*)/(.*)/(.*)/(.*)", GenerateHandler),
-    ])
+    ]
+    if 'DISABLE_GENERATE' not in os.environ:
+        handlers.append((r"/generate/(.*)/(.*)/(.*)/(.*)", GenerateHandler))
+    return tornado.web.Application(handlers)
 
 
 async def main():
