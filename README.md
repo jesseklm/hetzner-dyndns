@@ -16,6 +16,12 @@ update record:
 https://YOUR_HOST/dns/update/KEY/NEW_IP
 ```
 
+update multiple records (set `MAX_UPDATES_PER_GET` env variable, default=2):
+
+```
+https://YOUR_HOST/dns/update/KEY/NEW_IP[/KEY2/VALUE2]
+```
+
 ## create `config.yaml` entry
 
 - generate config entry
@@ -91,6 +97,7 @@ services:
     container_name: hetzner-dyndns
     environment:
       - DISABLE_GENERATE=1 # set after config creation
+      # - MAX_UPDATES_PER_GET=3 # default=2
     networks:
       - nginx
     restart: unless-stopped
