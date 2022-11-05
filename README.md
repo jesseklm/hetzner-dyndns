@@ -5,10 +5,16 @@ Service providing an API to update a specific DNS entry.
 ## API
 
 generate config entry:
-`https://YOUR_HOST/dns/generate/HETZNER_API_TOKEN/ZONE_NAME/RECORD_TYPE/RECORD_NAME`
+
+```
+https://YOUR_HOST/dns/generate/HETZNER_API_TOKEN/ZONE_NAME/RECORD_TYPE/RECORD_NAME
+```
 
 update record:
-`https://YOUR_HOST/dns/update/KEY/NEW_IP`
+
+```
+https://YOUR_HOST/dns/update/KEY/NEW_IP
+```
 
 ## create `config.yaml` entry
 
