@@ -21,7 +21,7 @@ update record:
 - go to `Internet / Permit Access / DynDNS`
 - check `Use DynDNS`
 - select `User-defined`
-- set `Update URL` to `https://YOURHOST/dns/update/<pass>/<ipaddr>` (`<ip6addr> for AAAA record`)
+- set `Update URL` to `https://YOUR_HOST/dns/update/<pass>/<ipaddr>` (`<ip6addr> for AAAA record`)
 - set `Domain name` to `RECORD_NAME.ZONE_NAME`
 - set `Username` to `ZONE_NAME`
 - set `Password` to `KEY` (first line of generate output without `:`)
