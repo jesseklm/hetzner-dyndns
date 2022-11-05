@@ -54,10 +54,19 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
         self.write('ok')
 
 
+class Dyndns2Handler(tornado.web.RequestHandler, ABC):
+    def get(self):
+        print(self.request.arguments)
+        print(self.request.body_arguments)
+        print(self.request.query_arguments)
+        print(self.request.headers)
+
+
 def make_app():
     reg: str = r'([\w.:]*)'
     update_url: str = f'/update/{reg}/{reg}'
     handlers: list = [
+        (f'/update', Dyndns2Handler),  # ?system=dyndns&hostname={reg}&myip={reg}
         (update_url, UpdateHandler),
     ]
     for _ in range(int(os.environ.get('MAX_UPDATES_PER_GET', 2)) - 1):
