@@ -56,10 +56,10 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
 
 class Dyndns2Handler(tornado.web.RequestHandler, ABC):
     def get(self):
-        print(self.request.arguments)
-        print(self.request.body_arguments)
-        print(self.request.query_arguments)
-        print(self.request.headers)
+        print(self.request.arguments, flush=True)
+        print(self.request.body_arguments, flush=True)
+        print(self.request.query_arguments, flush=True)
+        print(self.request.headers, flush=True)
 
 
 def make_app():
