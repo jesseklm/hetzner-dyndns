@@ -39,6 +39,17 @@ https://YOUR_HOST/dns/update/KEY/NEW_IP[/KEY2/VALUE2]
 - set `Username` to `ZONE_NAME`
 - set `Password` to `KEY` (first line of generate output without `:`)
 
+## opnsense ddclient configuration
+
+- select `Custom` as `Service`
+- select `DynDns2` as `Protocol`
+- set `Server` to `YOUR_HOST`
+- set `Username` to `ZONE_NAME`
+- set `Password` to `KEY` (first line of generate output without `:`)
+- untick `Wildcard`
+- set `Hostname(s)` to `RECORD_NAME.ZONE_NAME`
+- tick `Force SSL`
+
 ## additional configuration files
 
 nginx config example (`site.conf` file in `nginx/config` folder), replace `YOUR_CERTPATH` and `YOUR_HOST`:
@@ -56,6 +67,12 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_pass http://hetzner-dyndns:8888/;
+    }
+
+    location /nic/ {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://hetzner-dyndns:8888;
     }
 }
 
