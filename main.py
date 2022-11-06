@@ -1,3 +1,4 @@
+import base64
 import os
 import secrets
 import string
@@ -56,17 +57,30 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
 
 class Dyndns2Handler(tornado.web.RequestHandler, ABC):
     def get(self):
-        print(self.request.arguments, flush=True)
-        print(self.request.body_arguments, flush=True)
-        print(self.request.query_arguments, flush=True)
-        print(self.request.headers, flush=True)
+        if self.get_query_argument('system') != 'dyndns':
+            print('badagent')
+            return
+        ip: str = self.get_query_argument('myip')
+        auth: str = self.request.headers.get('Authorization', '')
+        if not auth.startswith('Basic '):
+            print(f'badauth')
+            return
+        auth = auth[6:]
+        auth = base64.b64decode(auth).decode()
+        key: str = auth[auth.rfind(':') + 1:]
+        if key not in config:
+            self.write('badauth')
+            return
+        record = HetznerDNSRecord.from_config(config[key])
+        record.update(ip)
+        self.write(f'good {ip}')
 
 
 def make_app():
     reg: str = r'([\w.:]*)'
     update_url: str = f'/update/{reg}/{reg}'
     handlers: list = [
-        (f'/update', Dyndns2Handler),  # ?system=dyndns&hostname={reg}&myip={reg}
+        (f'/nic/update', Dyndns2Handler),
         (update_url, UpdateHandler),
     ]
     for _ in range(int(os.environ.get('MAX_UPDATES_PER_GET', 2)) - 1):
