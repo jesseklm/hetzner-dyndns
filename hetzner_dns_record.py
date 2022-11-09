@@ -1,6 +1,6 @@
 import json
 
-import requests
+from tornado.httpclient import AsyncHTTPClient, HTTPRequest, HTTPClientError
 
 
 class HetznerDNSRecord:
@@ -21,26 +21,22 @@ class HetznerDNSRecord:
         return cls(config['api_token'], config['zone_id'], config['record']['id'], config['record']['type'],
                    config['record']['name'], config['record']['ttl'])
 
-    def update(self, value: str):
-        # Update Record
-        # PUT https://dns.hetzner.com/api/v1/records/{RecordID}
-
+    async def update(self, value: str):
         try:
-            response = requests.put(
-                url=f"https://dns.hetzner.com/api/v1/records/{self.record_id}",
+            await AsyncHTTPClient().fetch(HTTPRequest(
+                url=f'https://dns.hetzner.com/api/v1/records/{self.record_id}',
+                method='PUT',
                 headers={
-                    "Content-Type": "application/json",
-                    "Auth-API-Token": self.api_token,
+                    'Content-Type': 'application/json',
+                    'Auth-API-Token': self.api_token
                 },
-                data=json.dumps({
-                    "name": self.name,
-                    "ttl": self.ttl,
-                    "type": self.type,
-                    "value": value,
-                    "zone_id": self.zone_id
+                body=json.dumps({
+                    'name': self.name,
+                    'ttl': self.ttl,
+                    'type': self.type,
+                    'value': value,
+                    'zone_id': self.zone_id
                 })
-            )
-            # print(f'Response HTTP Status Code: {response.status_code}')
-            # print(f'Response HTTP Response Body: {response.content}')
-        except requests.exceptions.RequestException:
-            print('HTTP Request failed')
+            ))
+        except HTTPClientError as e:
+            print(f'update failed, {e}')

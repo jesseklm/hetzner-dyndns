@@ -17,10 +17,10 @@ from hetzner_dns_record import HetznerDNSRecord
 
 
 class GenerateHandler(tornado.web.RequestHandler, ABC):
-    def get(self, api_token, zone_name, record_type, record_name):
+    async def get(self, api_token, zone_name, record_type, record_name):
         dns = HetznerDNS(api_token)
-        zone = dns.get_zone(zone_name)
-        record = zone.get_record(record_type, record_name)
+        zone = await dns.get_zone(zone_name)
+        record = await zone.get_record(record_type, record_name)
         entry: dict = {
             ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(20)): {
                 'api_token': api_token,
@@ -38,7 +38,7 @@ class GenerateHandler(tornado.web.RequestHandler, ABC):
 
 
 class UpdateHandler(tornado.web.RequestHandler, ABC):
-    def get(self, *args):
+    async def get(self, *args):
         if len(args) % 2:
             self.write('parameters odd')
             return
@@ -51,12 +51,12 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
                 return
         for i in range(int(len(args) / 2)):
             record = HetznerDNSRecord.from_config(config[args[i * 2]])
-            record.update(args[i * 2 + 1])
+            await record.update(args[i * 2 + 1])
         self.write('ok')
 
 
 class Dyndns2Handler(tornado.web.RequestHandler, ABC):
-    def get(self):
+    async def get(self):
         if self.get_query_argument('system') != 'dyndns':
             print('badagent')
             return
@@ -72,7 +72,7 @@ class Dyndns2Handler(tornado.web.RequestHandler, ABC):
             self.write('badauth')
             return
         record = HetznerDNSRecord.from_config(config[key])
-        record.update(ip)
+        await record.update(ip)
         self.write(f'good {ip}')
 
 
