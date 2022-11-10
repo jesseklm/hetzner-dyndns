@@ -94,8 +94,7 @@ def make_app():
 async def main():
     app = make_app()
     app.listen(8888, xheaders=True)
-    shutdown_event = asyncio.Event()
-    await shutdown_event.wait()
+    await asyncio.Event().wait()
 
 
 def get_config_local(filename: Path) -> dict:
