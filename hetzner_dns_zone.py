@@ -1,6 +1,6 @@
 import json
 
-from tornado.httpclient import AsyncHTTPClient, HTTPRequest, HTTPClientError
+from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
 from tornado.httputil import url_concat
 
 from hetzner_dns_record import HetznerDNSRecord

@@ -1,18 +1,15 @@
+from abc import ABC
+import asyncio
 import base64
 import os
+from pathlib import Path
 import secrets
 import string
-from abc import ABC
-from pathlib import Path
 
+import tornado.web
 import yaml
 
 from hetzner_dns import HetznerDNS
-
-import asyncio
-
-import tornado.web
-
 from hetzner_dns_record import HetznerDNSRecord
 
 
@@ -91,9 +88,16 @@ def make_app():
     return tornado.web.Application(handlers)
 
 
+async def periodic():
+    while True:
+        print('periodic')
+        await asyncio.sleep(60)
+
+
 async def main():
     app = make_app()
     app.listen(8888, xheaders=True)
+    await periodic()
     await asyncio.Event().wait()
 
 
