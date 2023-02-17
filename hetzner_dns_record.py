@@ -11,6 +11,7 @@ class HetznerDNSRecord:
         self.type: str = rtype
         self.name: str = name
         self.ttl: int = ttl
+        self.value: str = ''
 
     @classmethod
     def from_dict(cls, api_token: str, record: dict):
@@ -40,3 +41,19 @@ class HetznerDNSRecord:
             ))
         except HTTPClientError as e:
             print(f'update failed, {e}')
+        else:
+            self.value = value
+
+    async def get_value(self):
+        try:
+            response = await AsyncHTTPClient().fetch(HTTPRequest(
+                url=f'https://dns.hetzner.com/api/v1/records/{self.record_id}',
+                headers={
+                    'Auth-API-Token': self.api_token,
+                }
+            ))
+        except HTTPClientError as e:
+            print(f'get failed, {e}')
+        else:
+            result = json.loads(response.body)['record']
+            self.value: str = result['value']
