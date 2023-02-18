@@ -9,11 +9,10 @@ import string
 import tornado.web
 import yaml
 
+from ha_setup import HASetup
 from hetzner_dns import HetznerDNS
 from hetzner_dns_record import HetznerDNSRecord
 from utils import get_config_local
-
-from icmplib import async_ping, NameLookupError
 
 
 class GenerateHandler(tornado.web.RequestHandler, ABC):
@@ -91,34 +90,17 @@ def make_app():
     return tornado.web.Application(handlers)
 
 
-async def periodic():
+async def init_ha():
     for key in config:
         if 'ha' in config[key]:
-            hosts: dict = config[key]['ha']
-            record = HetznerDNSRecord.from_config(config[key])
-            await record.get_value()
-            while True:
-                for host in hosts:
-                    try:
-                        result = await async_ping(host, count=5, privileged=False)
-                    except NameLookupError:
-                        continue
-                    if result.is_alive:
-                        if hosts[host]['value'] == record.value:
-                            break
-                        else:
-                            await record.update(hosts[host]['value'])
-                            print(f'{record.name} updated to {record.value}')
-                            break
-                else:
-                    print(f'{record.name} has no online candidate!')
-                await asyncio.sleep(60)
+            ha_setup: HASetup = await HASetup.from_config(config[key])
+            asyncio.create_task(ha_setup.run())
 
 
 async def main():
     app = make_app()
     app.listen(8888, xheaders=True)
-    asyncio.create_task(periodic())
+    await init_ha()
     await asyncio.Event().wait()
 
 
