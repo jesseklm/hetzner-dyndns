@@ -24,8 +24,8 @@ class HASetup:
                     continue
                 if host.update_value != self.record.value:
                     await self.record.update(host.update_value)
-                    print(f'{self.record.name} updated to {self.record.value}')
+                    print(f'{self.record.name} updated to {self.record.value}', flush=True)
                 break
             else:
-                print(f'{self.record.name} has no online candidate!')
+                print(f'{self.record.name} has no online candidate!', flush=True)
             await asyncio.sleep(60)

@@ -57,13 +57,13 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
 class Dyndns2Handler(tornado.web.RequestHandler, ABC):
     async def get(self):
         print(self.request.arguments, flush=True)
-        if self.get_query_argument('system') != 'dyndns':
-            print('badagent')
+        if self.get_query_argument('system', 'dyndns') != 'dyndns':
+            print('badagent', flush=True)
             return
         ip: str = self.get_query_argument('myip')
         auth: str = self.request.headers.get('Authorization', '')
         if not auth.startswith('Basic '):
-            print('badauth')
+            print('badauth', flush=True)
             return
         auth = auth[6:]
         auth = base64.b64decode(auth).decode()

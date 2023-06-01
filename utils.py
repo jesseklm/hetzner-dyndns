@@ -10,5 +10,5 @@ def get_config_local(filename: Path) -> dict:
         try:
             return yaml.safe_load(file)
         except yaml.YAMLError as e:
-            print(e)
+            print(e, flush=True)
             return {'error': str(e)}

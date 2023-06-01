@@ -26,7 +26,7 @@ class HetznerDNSZone:
                 }
             ))
         except HTTPClientError as e:
-            print(f'get_records failed, {e}')
+            print(f'get_records failed, {e}', flush=True)
             return {}
         else:
             return json.loads(response.body)['records']
@@ -35,8 +35,8 @@ class HetznerDNSZone:
         for record in await self.get_records():
             if record['type'] == rtype and record['name'] == name:
                 return HetznerDNSRecord.from_dict(self.api_token, record)
-        print(f'record ({rtype} {name}) does not exist.')
+        print(f'record ({rtype} {name}) does not exist.', flush=True)
 
     async def print_records(self):
         for record in await self.get_records():
-            print(f"id: {record['id']} type: {record['type']} name: {record['name']} value: {record['value']}")
+            print(f"id: {record['id']} type: {record['type']} name: {record['name']} value: {record['value']}", flush=True)

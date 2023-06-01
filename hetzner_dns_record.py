@@ -40,7 +40,7 @@ class HetznerDNSRecord:
                 })
             ))
         except HTTPClientError as e:
-            print(f'update failed, {e}')
+            print(f'update failed, {e}', flush=True)
         else:
             self.value = value
 
@@ -53,7 +53,7 @@ class HetznerDNSRecord:
                 }
             ))
         except HTTPClientError as e:
-            print(f'get failed, {e}')
+            print(f'get failed, {e}', flush=True)
         else:
             result = json.loads(response.body)['record']
             self.value: str = result['value']

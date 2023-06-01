@@ -18,7 +18,7 @@ class HetznerDNS:
                 }
             ))
         except HTTPClientError as e:
-            print(f'get_zones failed, {e}')
+            print(f'get_zones failed, {e}', flush=True)
             return {}
         else:
             return json.loads(response.body)['zones']
@@ -30,7 +30,7 @@ class HetznerDNS:
 
     async def print_zones(self):
         for zone in await self.get_zones():
-            print(f"id: {zone['id']} name: {zone['name']}")
+            print(f"id: {zone['id']} name: {zone['name']}", flush=True)
 
     async def get_record(self, record_id: str):
         try:
@@ -41,6 +41,6 @@ class HetznerDNS:
                 }
             ))
         except HTTPClientError as e:
-            print(f'get_record failed, {e}')
+            print(f'get_record failed, {e}', flush=True)
         else:
             return json.loads(response.body)['record']
