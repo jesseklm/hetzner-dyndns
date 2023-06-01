@@ -1,10 +1,10 @@
-from abc import ABC
 import asyncio
 import base64
 import os
-from pathlib import Path
 import secrets
 import string
+from abc import ABC
+from pathlib import Path
 
 import tornado.web
 import yaml
@@ -56,13 +56,14 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
 
 class Dyndns2Handler(tornado.web.RequestHandler, ABC):
     async def get(self):
+        print(self.request.arguments)
         if self.get_query_argument('system') != 'dyndns':
             print('badagent')
             return
         ip: str = self.get_query_argument('myip')
         auth: str = self.request.headers.get('Authorization', '')
         if not auth.startswith('Basic '):
-            print(f'badauth')
+            print('badauth')
             return
         auth = auth[6:]
         auth = base64.b64decode(auth).decode()
