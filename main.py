@@ -56,7 +56,6 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
 
 class Dyndns2Handler(tornado.web.RequestHandler, ABC):
     async def get(self):
-        print(self.request.arguments, flush=True)
         if self.get_query_argument('system', 'dyndns') != 'dyndns':
             print('badagent', flush=True)
             return
