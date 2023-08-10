@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 from ha_host import HAHost
 from hetzner_dns_record import HetznerDNSRecord
@@ -20,11 +21,15 @@ class HASetup:
     async def run(self):
         while True:
             for host in self.hosts:
-                if not await host.check_online():
-                    continue
-                if host.update_value != self.record.value:
-                    await self.record.update(host.update_value)
-                    print(f'{self.record.name} updated to {self.record.value}', flush=True)
+                try:
+                    if not await host.check_online():
+                        continue
+                    if host.update_value != self.record.value:
+                        await self.record.update(host.update_value)
+                        print(f'{self.record.name} updated to {self.record.value}', flush=True)
+                except Exception as e:
+                    print('ha_loop failed:', e)
+                    traceback.print_exc()
                 break
             else:
                 print(f'{self.record.name} has no online candidate!', flush=True)

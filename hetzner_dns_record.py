@@ -39,7 +39,7 @@ class HetznerDNSRecord:
                     'zone_id': self.zone_id
                 })
             ))
-        except HTTPClientError as e:
+        except (HTTPClientError, OSError) as e:
             print(f'update failed, {e}', flush=True)
         else:
             self.value = value
