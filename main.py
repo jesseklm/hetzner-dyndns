@@ -54,7 +54,7 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
             value = args[i * 2 + 1]
             if config_entry['record']['type'] == 'AAAA' and 'ipv6suffix' in config_entry:
                 full_ipv6 = ipaddress.ip_address(value).exploded
-                prefix, _ = full_ipv6.split(":", 4)[:4]
+                prefix = ':'.join(full_ipv6.split(':')[:4])
                 value = f"{prefix}:{config_entry['ipv6suffix']}"
             record = HetznerDNSRecord.from_config(config_entry)
             await record.update(value)
