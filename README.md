@@ -6,19 +6,19 @@ Service providing an API to update a specific DNS entry.
 
 generate config entry:
 
-```
+```ruby
 https://YOUR_HOST/dns/generate/HETZNER_API_TOKEN/ZONE_NAME/RECORD_TYPE/RECORD_NAME
 ```
 
 update record:
 
-```
+```ruby
 https://YOUR_HOST/dns/update/KEY/NEW_IP
 ```
 
 update multiple records (set `MAX_UPDATES_PER_GET` env variable, default=2):
 
-```
+```ruby
 https://YOUR_HOST/dns/update/KEY/NEW_IP[/KEY2/VALUE2]
 ```
 
