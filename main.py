@@ -1,5 +1,6 @@
 import asyncio
 import base64
+import ipaddress
 import os
 import secrets
 import string
@@ -49,8 +50,14 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
                 self.write('failed')
                 return
         for i in range(int(len(args) / 2)):
-            record = HetznerDNSRecord.from_config(config[args[i * 2]])
-            await record.update(args[i * 2 + 1])
+            config_entry = config[args[i * 2]]
+            value = args[i * 2 + 1]
+            if config_entry['record']['type'] == 'AAAA' and 'ipv6suffix' in config_entry:
+                full_ipv6 = ipaddress.ip_address(value).exploded
+                prefix, _ = full_ipv6.split(":", 4)[:4]
+                value = f"{prefix}:{config_entry['ipv6suffix']}"
+            record = HetznerDNSRecord.from_config(config_entry)
+            await record.update(value)
         self.write('ok')
 
 
