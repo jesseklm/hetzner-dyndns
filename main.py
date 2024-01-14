@@ -7,8 +7,10 @@ import string
 from abc import ABC
 from pathlib import Path
 
+import CloudFlare
 import tornado.web
 import yaml
+from CloudFlare.exceptions import CloudFlareAPIError
 
 from ha_setup import HASetup
 from hetzner_dns import HetznerDNS
@@ -37,6 +39,26 @@ class GenerateHandler(tornado.web.RequestHandler, ABC):
         self.write(f'<pre>{entry_yaml}</pre>')
 
 
+def update_cloudflare(config_entry: dict, value: str):
+    try:
+        cf = CloudFlare.CloudFlare(token=config_entry['api_token'])
+        cf.zones.dns_records.put(config_entry['zone_id'], config_entry['record']['id'], data={
+            'type': config_entry['record']['type'],
+            'name': config_entry['record']['name'],
+            'content': value
+        })
+    except CloudFlareAPIError as e:
+        print(f'update failed, {e}', flush=True)
+
+
+async def update_entry(config_entry: dict, value: str):
+    if config_entry.get('type', '') == 'cloudflare':
+        await asyncio.to_thread(update_cloudflare, config_entry, value)
+    else:
+        record = HetznerDNSRecord.from_config(config_entry)
+        await record.update(value)
+
+
 class UpdateHandler(tornado.web.RequestHandler, ABC):
     async def get(self, *args):
         if len(args) % 2:
@@ -56,8 +78,7 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
                 full_ipv6 = ipaddress.ip_address(value).exploded
                 prefix = ':'.join(full_ipv6.split(':')[:4])
                 value = f"{prefix}:{config_entry['ipv6suffix']}"
-            record = HetznerDNSRecord.from_config(config_entry)
-            await record.update(value)
+            await update_entry(config_entry, value)
         self.write('ok')
 
 
@@ -77,8 +98,7 @@ class Dyndns2Handler(tornado.web.RequestHandler, ABC):
         if key not in config:
             self.write('badauth')
             return
-        record = HetznerDNSRecord.from_config(config[key])
-        await record.update(ip)
+        await update_entry(config[key], ip)
         self.write(f'good {ip}')
 
 
