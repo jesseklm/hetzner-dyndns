@@ -19,24 +19,50 @@ from utils import get_config_local
 
 
 class GenerateHandler(tornado.web.RequestHandler, ABC):
-    async def get(self, api_token, zone_name, record_type, record_name):
-        dns = HetznerDNS(api_token)
-        zone = await dns.get_zone(zone_name)
-        record = await zone.get_record(record_type, record_name)
-        entry: dict = {
-            ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(20)): {
-                'api_token': api_token,
-                'zone_id': record.zone_id,
-                'record': {
-                    'id': record.record_id,
-                    'type': record.type,
-                    'name': record.name,
-                    'ttl': record.ttl
+    async def get(self, api_token, zone_name, record_type, record_name, entry_type):
+        if entry_type == 'cloudflare':
+            cf = CloudFlare.CloudFlare(token=api_token)
+            zones = cf.zones.get(params={'name': zone_name})
+            if len(zones) == 0:
+                self.write('<pre>zone not found.</pre>')
+                return
+            zone_id = zones[0]['id']
+            dns_records = cf.zones.dns_records.get(zone_id, params={'name': record_name})
+            if len(dns_records) == 0:
+                self.write('<pre>no records found.</pre>')
+                return
+            entry: dict = {
+                ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(20)): {
+                    'type': 'cloudflare',
+                    'api_token': api_token,
+                    'zone_id': zone_id,
+                    'record': {
+                        'id': dns_records[0]['id'],
+                        'type': dns_records[0]['type'],
+                        'name': dns_records[0]['name']
+                    }
                 }
             }
-        }
-        entry_yaml = yaml.dump(entry, default_flow_style=False, sort_keys=False)
-        self.write(f'<pre>{entry_yaml}</pre>')
+            entry_yaml = yaml.dump(entry, default_flow_style=False, sort_keys=False)
+            self.write(f'<pre>{entry_yaml}</pre>')
+        else:
+            dns = HetznerDNS(api_token)
+            zone = await dns.get_zone(zone_name)
+            record = await zone.get_record(record_type, record_name)
+            entry: dict = {
+                ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(20)): {
+                    'api_token': api_token,
+                    'zone_id': record.zone_id,
+                    'record': {
+                        'id': record.record_id,
+                        'type': record.type,
+                        'name': record.name,
+                        'ttl': record.ttl
+                    }
+                }
+            }
+            entry_yaml = yaml.dump(entry, default_flow_style=False, sort_keys=False)
+            self.write(f'<pre>{entry_yaml}</pre>')
 
 
 def update_cloudflare(config_entry: dict, value: str):
@@ -113,7 +139,7 @@ def make_app():
         update_url += f'/{reg}/{reg}'
         handlers.append((update_url, UpdateHandler))
     if 'DISABLE_GENERATE' not in os.environ:
-        handlers.append((f'/generate/{reg}/{reg}/{reg}/{reg}', GenerateHandler))
+        handlers.append((f'/generate/{reg}/{reg}/{reg}/{reg}(?:/{reg})?', GenerateHandler))
     return tornado.web.Application(handlers)
 
 
