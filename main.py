@@ -39,7 +39,8 @@ class GenerateHandler(tornado.web.RequestHandler, ABC):
                     'record': {
                         'id': dns_records[0]['id'],
                         'type': dns_records[0]['type'],
-                        'name': dns_records[0]['name']
+                        'name': dns_records[0]['name'],
+                        'ttl': dns_records[0]['ttl'],
                     }
                 }
             }
@@ -71,7 +72,8 @@ def update_cloudflare(config_entry: dict, value: str):
         cf.zones.dns_records.put(config_entry['zone_id'], config_entry['record']['id'], data={
             'type': config_entry['record']['type'],
             'name': config_entry['record']['name'],
-            'content': value
+            'ttl': config_entry['record'].get('ttl', 60),
+            'content': value,
         })
     except CloudFlareAPIError as e:
         print(f'update failed, {e}', flush=True)
@@ -147,7 +149,7 @@ async def init_ha():
     for key in config:
         if 'ha' in config[key]:
             ha_setup: HASetup = await HASetup.from_config(config[key])
-            asyncio.create_task(ha_setup.run())
+            tasks.append(asyncio.create_task(ha_setup.run()))
 
 
 async def main():
@@ -159,4 +161,5 @@ async def main():
 
 if __name__ == '__main__':
     config: dict = get_config_local(Path('config.yaml'))
+    tasks = []
     asyncio.run(main())
