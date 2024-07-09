@@ -98,7 +98,7 @@ services:
     container_name: nginx
     depends_on:
       - hetzner-dyndns
-    image: nginx:mainline
+    image: nginx:mainline-alpine
     networks:
       - nginx
     ports:
