@@ -5,6 +5,7 @@ import os
 import secrets
 import string
 from abc import ABC
+from asyncio import Task
 from pathlib import Path
 
 import CloudFlare
@@ -19,7 +20,7 @@ from utils import get_config_local
 
 
 class GenerateHandler(tornado.web.RequestHandler, ABC):
-    async def get(self, api_token, zone_name, record_type, record_name, entry_type):
+    async def get(self, api_token, zone_name, record_type, record_name, entry_type) -> None:
         if entry_type == 'cloudflare':
             cf = CloudFlare.CloudFlare(token=api_token)
             zones = cf.zones.get(params={'name': zone_name})
@@ -66,7 +67,7 @@ class GenerateHandler(tornado.web.RequestHandler, ABC):
             self.write(f'<pre>{entry_yaml}</pre>')
 
 
-def update_cloudflare(config_entry: dict, value: str):
+def update_cloudflare(config_entry: dict, value: str) -> None:
     try:
         cf = CloudFlare.CloudFlare(token=config_entry['api_token'])
         cf.zones.dns_records.put(config_entry['zone_id'], config_entry['record']['id'], data={
@@ -88,7 +89,7 @@ async def update_entry(config_entry: dict, value: str):
 
 
 class UpdateHandler(tornado.web.RequestHandler, ABC):
-    async def get(self, *args):
+    async def get(self, *args) -> None:
         if len(args) % 2:
             self.write('parameters odd')
             return
@@ -111,7 +112,7 @@ class UpdateHandler(tornado.web.RequestHandler, ABC):
 
 
 class Dyndns2Handler(tornado.web.RequestHandler, ABC):
-    async def get(self):
+    async def get(self) -> None:
         if self.get_query_argument('system', 'dyndns') != 'dyndns':
             print('badagent', flush=True)
             return
@@ -130,7 +131,7 @@ class Dyndns2Handler(tornado.web.RequestHandler, ABC):
         self.write(f'good {ip}')
 
 
-def make_app():
+def make_app() -> tornado.web.Application:
     reg: str = r'([\w.:]*)'
     update_url: str = f'/update/{reg}/{reg}'
     handlers: list = [
@@ -145,15 +146,15 @@ def make_app():
     return tornado.web.Application(handlers)
 
 
-async def init_ha():
+async def init_ha() -> None:
     for key in config:
         if 'ha' in config[key]:
             ha_setup: HASetup = await HASetup.from_config(config[key])
             tasks.append(asyncio.create_task(ha_setup.run()))
 
 
-async def main():
-    app = make_app()
+async def main() -> None:
+    app: tornado.web.Application = make_app()
     app.listen(8888, xheaders=True)
     await init_ha()
     await asyncio.Event().wait()
@@ -161,5 +162,5 @@ async def main():
 
 if __name__ == '__main__':
     config: dict = get_config_local(Path('config.yaml'))
-    tasks = []
+    tasks: list[Task] = []
     asyncio.run(main())

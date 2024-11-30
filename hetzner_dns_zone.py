@@ -1,4 +1,5 @@
 import json
+from typing import Self
 
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
 from tornado.httputil import url_concat
@@ -7,12 +8,12 @@ from hetzner_dns_record import HetznerDNSRecord
 
 
 class HetznerDNSZone:
-    def __init__(self, api_token: str, zone_id: str):
+    def __init__(self, api_token: str, zone_id: str) -> None:
         self.api_token: str = api_token
         self.zone_id: str = zone_id
 
     @classmethod
-    def from_dict(cls, api_token: str, zone: dict):
+    def from_dict(cls, api_token: str, zone: dict) -> Self:
         return cls(api_token, zone['id'])
 
     async def get_records(self) -> dict:
@@ -37,6 +38,7 @@ class HetznerDNSZone:
                 return HetznerDNSRecord.from_dict(self.api_token, record)
         print(f'record ({rtype} {name}) does not exist.', flush=True)
 
-    async def print_records(self):
+    async def print_records(self) -> None:
         for record in await self.get_records():
-            print(f"id: {record['id']} type: {record['type']} name: {record['name']} value: {record['value']}", flush=True)
+            print(f"id: {record['id']} type: {record['type']} name: {record['name']} value: {record['value']}",
+                  flush=True)

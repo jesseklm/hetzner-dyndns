@@ -1,24 +1,23 @@
 import asyncio
 import traceback
+from typing import Self
 
 from ha_host import HAHost
 from hetzner_dns_record import HetznerDNSRecord
 
 
 class HASetup:
-    def __init__(self, hosts: dict, record: HetznerDNSRecord):
-        self.hosts: list[HAHost] = []
-        for host in hosts:
-            self.hosts.append(HAHost(host, hosts[host]['value']))
+    def __init__(self, hosts: dict, record: HetznerDNSRecord) -> None:
+        self.hosts: list[HAHost] = [HAHost(host, data['value']) for host, data in hosts.items()]
         self.record: HetznerDNSRecord = record
 
     @classmethod
-    async def from_config(cls, config: dict):
-        self: HASetup = cls(config['ha'], HetznerDNSRecord.from_config(config))
+    async def from_config(cls, config: dict) -> Self:
+        self: Self = cls(config['ha'], HetznerDNSRecord.from_config(config))
         await self.record.get_value()
         return self
 
-    async def run(self):
+    async def run(self) -> None:
         while True:
             for host in self.hosts:
                 try:

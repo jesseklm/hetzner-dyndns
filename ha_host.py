@@ -2,7 +2,7 @@ from icmplib import async_ping, NameLookupError
 
 
 class HAHost:
-    def __init__(self, hostname: str, update_value: str):
+    def __init__(self, hostname: str, update_value: str) -> None:
         self.hostname: str = hostname
         self.update_value: str = update_value
 

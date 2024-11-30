@@ -1,10 +1,11 @@
 import json
+from typing import Self
 
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
 
 
 class HetznerDNSRecord:
-    def __init__(self, api_token: str, zone_id: str, record_id: str, rtype: str, name: str, ttl: int):
+    def __init__(self, api_token: str, zone_id: str, record_id: str, rtype: str, name: str, ttl: int) -> None:
         self.api_token: str = api_token
         self.zone_id: str = zone_id
         self.record_id: str = record_id
@@ -14,15 +15,15 @@ class HetznerDNSRecord:
         self.value: str = ''
 
     @classmethod
-    def from_dict(cls, api_token: str, record: dict):
+    def from_dict(cls, api_token: str, record: dict) -> Self:
         return cls(api_token, record['zone_id'], record['id'], record['type'], record['name'], record['ttl'])
 
     @classmethod
-    def from_config(cls, config: dict):
+    def from_config(cls, config: dict) -> Self:
         return cls(config['api_token'], config['zone_id'], config['record']['id'], config['record']['type'],
                    config['record']['name'], config['record']['ttl'])
 
-    async def update(self, value: str):
+    async def update(self, value: str) -> None:
         try:
             await AsyncHTTPClient().fetch(HTTPRequest(
                 url=f'https://dns.hetzner.com/api/v1/records/{self.record_id}',
@@ -44,7 +45,7 @@ class HetznerDNSRecord:
         else:
             self.value = value
 
-    async def get_value(self):
+    async def get_value(self) -> None:
         try:
             response = await AsyncHTTPClient().fetch(HTTPRequest(
                 url=f'https://dns.hetzner.com/api/v1/records/{self.record_id}',

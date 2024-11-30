@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 from tornado.httpclient import AsyncHTTPClient, HTTPClientError, HTTPRequest
 
@@ -6,7 +7,7 @@ from hetzner_dns_zone import HetznerDNSZone
 
 
 class HetznerDNS:
-    def __init__(self, api_token: str):
+    def __init__(self, api_token: str) -> None:
         self.api_token: str = api_token
 
     async def get_zones(self) -> dict:
@@ -27,12 +28,13 @@ class HetznerDNS:
         for zone in await self.get_zones():
             if zone['name'] == name:
                 return HetznerDNSZone.from_dict(self.api_token, zone)
+        raise KeyError(f'zone {name} not found')
 
-    async def print_zones(self):
+    async def print_zones(self) -> None:
         for zone in await self.get_zones():
             print(f"id: {zone['id']} name: {zone['name']}", flush=True)
 
-    async def get_record(self, record_id: str):
+    async def get_record(self, record_id: str) -> Any:
         try:
             response = await AsyncHTTPClient().fetch(HTTPRequest(
                 url=f'https://dns.hetzner.com/api/v1/records/{record_id}',
