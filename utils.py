@@ -12,3 +12,6 @@ def get_config_local(filename: Path) -> dict:
         except yaml.YAMLError as e:
             print(e, flush=True)
             return {'error': str(e)}
+
+
+config: dict = get_config_local(Path('config.yaml'))

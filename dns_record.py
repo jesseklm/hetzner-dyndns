@@ -24,6 +24,21 @@ class DnsRecord:
                    data['record']['name'],
                    data['record']['type'])
 
+    async def get_value(self) -> str:
+        if self.handler_type == 'cloudflare':
+            client = AsyncCloudflare(api_token=self.api_token)
+            result = await client.dns.records.get(
+                dns_record_id=self.id,
+                zone_id=self.zone_id,
+            )
+            self.value = getattr(result, 'content', '')
+        else:
+            client = hcloud.Client(token=self.api_token)
+            result = await asyncio.to_thread(client.zones.get_rrset,
+                                             hcloud.zones.Zone(id=self.zone_id), self.name, self.type)
+            self.value = ','.join(record.value for record in result.records)
+        return self.value
+
     async def update(self, value: str):
         if self.handler_type == 'cloudflare':
             client = AsyncCloudflare(api_token=self.api_token)
@@ -40,3 +55,4 @@ class DnsRecord:
                 zone=hcloud.zones.Zone(id=self.zone_id),
                 id=self.id,
             ), [hcloud.zones.ZoneRecord(value=value)])
+        self.value = value

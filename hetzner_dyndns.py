@@ -3,7 +3,6 @@ import base64
 import ipaddress
 import secrets
 import string
-from pathlib import Path
 
 import hcloud
 import yaml
@@ -13,7 +12,10 @@ from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 
 from dns_record import DnsRecord
-from utils import get_config_local
+from ha_setup import HASetup
+from utils import config
+
+background_tasks = set()
 
 
 @app.get('/dns/update/{path:path}')
@@ -130,8 +132,8 @@ async def config_table() -> None:
                             full_records[record.id] = record
                     elif type_select.value == 'hetzner':
                         client = hcloud.Client(token=api_token.value)
-                        zone = await asyncio.to_thread(client.zones.get, zone_id_select.value)
-                        for record in await asyncio.to_thread(zone.get_rrset_all):
+                        for record in await asyncio.to_thread(client.zones.get_rrset_all,
+                                                              hcloud.zones.Zone(id=zone_id_select.value)):
                             records[record.id] = f'{record.type}: {record.name}'
                             full_records[record.id] = record
                     record_select.props(remove='loading')
@@ -180,7 +182,16 @@ async def home() -> None:
             await config_table()
 
 
+async def init_ha() -> None:
+    for key, value in config.items():
+        if 'ha' in value:
+            ha_setup: HASetup = await HASetup.from_config(value)
+            task = asyncio.create_task(ha_setup.run())
+            background_tasks.add(task)
+            task.add_done_callback(background_tasks.discard)
+
+
 if __name__ in {"__main__", "__mp_main__"}:
     app.colors(primary='#c95e00')
-    config: dict = get_config_local(Path('config.yaml'))
+    app.on_startup(init_ha)
     ui.run(show=False, reload=False, dark=True, port=8888)

@@ -27,7 +27,7 @@ class HASetup:
                         await self.record.update(host.update_value)
                         print(f'{self.record.name} updated to {self.record.value}', flush=True)
                 except Exception as e:
-                    print('ha_loop failed:', e)
+                    print('ha_loop failed:', e, flush=True)
                     traceback.print_exc()
                 break
             else:
