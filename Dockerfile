@@ -1,11 +1,17 @@
-FROM python:3.12-alpine
+FROM python:3.13-alpine AS builder
+ADD https://astral.sh/uv/0.11.7/install.sh /uv-installer.sh
+RUN sh /uv-installer.sh
+ENV PATH="/root/.local/bin/:$PATH"
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+ENV UV_NO_DEV=1
+ENV UV_PYTHON_DOWNLOADS=0
+COPY --exclude=.git/ --exclude=.venv/ . /app
+WORKDIR /app
+RUN uv sync --locked
 
-WORKDIR /usr/src/app
-
-COPY requirements.txt requirements.txt
-
-RUN pip install --no-cache-dir --prefer-binary -r requirements.txt
-
-COPY . .
-
-CMD [ "python", "./main.py" ]
+FROM python:3.13-alpine
+COPY --from=builder /app /app
+ENV PATH="/app/.venv/bin:$PATH"
+WORKDIR /app
+CMD [ "python", "hetzner_dyndns.py" ]
