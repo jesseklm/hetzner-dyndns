@@ -4,19 +4,13 @@ Service providing an API to update a specific DNS entry.
 
 ## API
 
-generate config entry:
-
-```ruby
-https://YOUR_HOST/dns/generate/HETZNER_API_TOKEN/ZONE_NAME/RECORD_TYPE/RECORD_NAME
-```
-
 update record:
 
 ```ruby
 https://YOUR_HOST/dns/update/KEY/NEW_IP
 ```
 
-update multiple records (set `MAX_UPDATES_PER_GET` env variable, default=2):
+update multiple records:
 
 ```ruby
 https://YOUR_HOST/dns/update/KEY/NEW_IP[/KEY2/VALUE2]
@@ -26,7 +20,6 @@ https://YOUR_HOST/dns/update/KEY/NEW_IP[/KEY2/VALUE2]
 
 - generate config entry
 - append output to `hetzner-dyndns/config.yaml`
-- set `DISABLE_GENERATE=1` env variable in docker compose file
 - restart service
 
 ## fritzbox configuration
@@ -66,7 +59,7 @@ server {
     location /dns/ {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_pass http://hetzner-dyndns:8888/;
+        proxy_pass http://hetzner-dyndns:8888;
     }
 
     location /nic/ {
@@ -110,15 +103,12 @@ services:
 
   hetzner-dyndns:
     container_name: hetzner-dyndns
-    environment:
-      - DISABLE_GENERATE=1 # set after config creation
-      # - MAX_UPDATES_PER_GET=3 # default=2
-    image: ghcr.io/jesseklm/hetzner-dyndns:master
+    image: ghcr.io/jesseklm/hetzner-dyndns:0.0.2
     networks:
       - nginx
     restart: unless-stopped
     volumes:
-      - ./hetzner-dyndns/config.yaml:/usr/src/app/config.yaml:ro
+      - ./hetzner-dyndns/config.yaml:/app/config.yaml:ro
 
 networks:
   nginx:
