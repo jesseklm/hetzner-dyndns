@@ -93,13 +93,12 @@ server {
 docker compose example:
 
 ```yaml
-version: "3"
 services:
   nginx:
     container_name: nginx
     depends_on:
       - hetzner-dyndns
-    image: nginx:mainline
+    image: nginx:mainline-alpine
     networks:
       - nginx
     ports:
@@ -110,11 +109,11 @@ services:
       - ./nginx/config:/etc/nginx/conf.d:ro
 
   hetzner-dyndns:
-    build: https://github.com/jesseklm/hetzner-dyndns.git
     container_name: hetzner-dyndns
     environment:
       - DISABLE_GENERATE=1 # set after config creation
       # - MAX_UPDATES_PER_GET=3 # default=2
+    image: ghcr.io/jesseklm/hetzner-dyndns:master
     networks:
       - nginx
     restart: unless-stopped
