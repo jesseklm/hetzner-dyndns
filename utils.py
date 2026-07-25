@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import tomli_w
 import yaml
 
 
@@ -14,4 +15,7 @@ def get_config_local(filename: Path) -> dict:
             return {'error': str(e)}
 
 
-config: dict = get_config_local(Path('config.yaml'))
+if __name__ == '__main__':
+    config = get_config_local(Path('config.yaml'))
+    with open('config.toml', 'wb') as f:
+        tomli_w.dump(config, f)

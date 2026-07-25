@@ -5,15 +5,14 @@ import secrets
 import string
 
 import hcloud
-import yaml
 from cloudflare import AsyncCloudflare
 from nicegui import app, ui
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
 
+from config import config, write_config
 from dns_record import DnsRecord
 from ha_setup import HASetup
-from utils import config
 
 background_tasks = set()
 
@@ -157,8 +156,7 @@ async def config_table() -> None:
                                 'name': full_records[record_select.value].name,
                             }
                         }
-                        entry_yaml = yaml.dump(config, default_flow_style=False, sort_keys=False)
-                        print(entry_yaml)
+                        await asyncio.to_thread(write_config)
                         ui.timer(0, config_table.refresh, once=True)
                         dialog.close()
 

@@ -162,7 +162,7 @@ wheels = [
 
 [[package]]
 name = "cloudflare"
-version = "4.3.1"
+version = "5.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -172,9 +172,9 @@ dependencies = [
     { name = "sniffio" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5d/48/e481c0a9b9010a5c41b5ca78ff9fbe00dc8a9a4d39da5af610a4ec49c7f7/cloudflare-4.3.1.tar.gz", hash = "sha256:b1e1c6beeb8d98f63bfe0a1cba874fc4e22e000bcc490544f956c689b3b5b258", size = 1933187, upload-time = "2025-06-16T21:43:18.716Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e1/72/186cbd9bd94938336101b32432427ee7bfc770117989faa82496de2c766c/cloudflare-5.1.0.tar.gz", hash = "sha256:ed06f7544e3bb2dac43e2029f91170d2e7c427ac33bb3eb3e464965f46a852a6", size = 2806389, upload-time = "2026-05-06T17:24:46.758Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3a/8f/c6c543565efd3144da4304efa5917aac06b6416a8663a6defe0e9b2b7569/cloudflare-4.3.1-py3-none-any.whl", hash = "sha256:6927135a5ee5633d6e2e1952ca0484745e933727aeeb189996d2ad9d292071c6", size = 4406465, upload-time = "2025-06-16T21:43:17.3Z" },
+    { url = "https://files.pythonhosted.org/packages/11/b9/1def3be61a08ae27c62b86d9636ff7262cee7318506fcd593b89333c09e0/cloudflare-5.1.0-py3-none-any.whl", hash = "sha256:c9ad846ef889aa5476ce15cd509eacc294ffac3ac834cdf924d4582d5638c759", size = 5955742, upload-time = "2026-05-06T17:24:44.709Z" },
 ]
 
 [[package]]
@@ -272,15 +272,15 @@ wheels = [
 
 [[package]]
 name = "hcloud"
-version = "2.18.0"
+version = "2.20.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "python-dateutil" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ff/9b/0dcc1f97d1113bd05fa59709deb5b9e02250cbfb3bfed84eb61e8ad22833/hcloud-2.18.0.tar.gz", hash = "sha256:c2e0a6021ba0f79dd59499c2da8de213d210a3bccec412395ce50a577950f813", size = 154418, upload-time = "2026-04-23T10:04:24.209Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/43/0c/69b03f17185582631c991e7ad11c3b77c41b37d6e479729286452d9e0711/hcloud-2.20.0.tar.gz", hash = "sha256:27052effab1a25bb3cbfc8e2d2472e0e8503b20aecab5bbad5c4b0e8697696d5", size = 155249, upload-time = "2026-05-07T20:05:41.635Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3f/71/c9ddf34330b3439a68c3a48b8f4d7d882feffd2b55dc2054f0f69092a422/hcloud-2.18.0-py3-none-any.whl", hash = "sha256:7db6bf1e86898ca810c874ff12b3701e49a2e2b53be601ebf2fb8a427f5f7aa0", size = 111884, upload-time = "2026-04-23T10:04:22.51Z" },
+    { url = "https://files.pythonhosted.org/packages/42/b1/ecb2bf25a2a1333bd85d29e13db91085a88e4ef32e77afbc57cbe2fc524f/hcloud-2.20.0-py3-none-any.whl", hash = "sha256:7373c807c3dbbe5e35e25945e7c1a54d66b6b126d700cc2b8accf0c160f035a6", size = 112086, upload-time = "2026-05-07T20:05:39.723Z" },
 ]
 
 [[package]]
@@ -293,15 +293,17 @@ dependencies = [
     { name = "icmplib" },
     { name = "nicegui" },
     { name = "pyyaml" },
+    { name = "tomli-w" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "cloudflare", specifier = "==4.3.1" },
-    { name = "hcloud", specifier = "==2.18.0" },
+    { name = "cloudflare", specifier = "==5.1.0" },
+    { name = "hcloud", specifier = "==2.20.0" },
     { name = "icmplib", specifier = "==3.0.4" },
     { name = "nicegui", specifier = "==3.11.1" },
     { name = "pyyaml", specifier = "==6.0.3" },
+    { name = "tomli-w", specifier = ">=1.2.0" },
 ]
 
 [[package]]
@@ -809,6 +811,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a3/ae/2ca4913e5c0f09781d75482874c3a95db9105462a92ddd303c7d285d3df2/tinycss2-1.5.1.tar.gz", hash = "sha256:d339d2b616ba90ccce58da8495a78f46e55d4d25f9fd71dfd526f07e7d53f957", size = 88195, upload-time = "2025-11-23T10:29:10.082Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/60/45/c7b5c3168458db837e8ceab06dc77824e18202679d0463f0e8f002143a97/tinycss2-1.5.1-py3-none-any.whl", hash = "sha256:3415ba0f5839c062696996998176c4a3751d18b7edaaeeb658c9ce21ec150661", size = 28404, upload-time = "2025-11-23T10:29:08.676Z" },
+]
+
+[[package]]
+name = "tomli-w"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/75/241269d1da26b624c0d5e110e8149093c759b7a286138f4efd61a60e75fe/tomli_w-1.2.0.tar.gz", hash = "sha256:2dd14fac5a47c27be9cd4c976af5a12d87fb1f0b4512f81d69cce3b35ae25021", size = 7184, upload-time = "2025-01-15T12:07:24.262Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c7/18/c86eb8e0202e32dd3df50d43d7ff9854f8e0603945ff398974c1d91ac1ef/tomli_w-1.2.0-py3-none-any.whl", hash = "sha256:188306098d013b691fcadc011abd66727d3c414c571bb01b1a174ba8c983cf90", size = 6675, upload-time = "2025-01-15T12:07:22.074Z" },
 ]
 
 [[package]]

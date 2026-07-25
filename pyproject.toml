@@ -3,9 +3,10 @@ name = "hetzner-dyndns"
 version = "0.0.1"
 requires-python = "==3.13.*"
 dependencies = [
-    "cloudflare==4.3.1",
-    "hcloud==2.18.0",
+    "cloudflare==5.1.0",
+    "hcloud==2.20.0",
     "icmplib==3.0.4",
     "nicegui==3.11.1",
     "pyyaml==6.0.3",
+    "tomli-w>=1.2.0",
 ]
